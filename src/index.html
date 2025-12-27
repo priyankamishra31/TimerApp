@@ -7,50 +7,141 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-gradient-to-b from-pink-100 to-purple-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white rounded-3xl shadow-2xl p-8 w-80">
-    <!-- Header -->
-    <h1 class="text-4xl font-bold text-center text-purple-600 mb-8">⏰ Timer</h1>
+<body class="flex items-center justify-center min-h-screen overflow-hidden">
+  <!-- Animated Tea Cup Character (moves around) -->
+  <div id="character" class="character character-idle">
+    <img src="../assets/teacup.png" alt="Tea Cup" class="w-40 h-40 object-contain filter drop-shadow-lg">
+  </div>
 
-    <!-- Timer Display -->
-    <div id="timerDisplay" class="text-7xl font-bold text-center text-purple-700 mb-8 font-mono">
-      00:00
+  <!-- Animated Tea Kettle (moves around) -->
+  <div id="kettle" class="kettle kettle-idle">
+    <img src="../assets/kettle.png" alt="Tea Kettle" class="w-36 h-36 object-contain filter drop-shadow-lg">
+  </div>
+
+  <div class="flex flex-col items-center justify-center gap-12 relative z-10">
+    <!-- Timer Display Container -->
+    <div class="bg-orange-400 rounded-2xl px-12 py-6 shadow-lg">
+      <div id="timerDisplay" class="text-6xl font-bold text-center text-white font-mono">
+        00:00
+      </div>
+    </div>
+
+    <!-- Alarm Clock Icon -->
+    <div class="relative">
+      <svg class="w-48 h-48 animate-pulse" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- Clock body -->
+        <circle cx="50" cy="55" r="35" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+        <!-- Clock face -->
+        <circle cx="50" cy="55" r="30" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+        
+        <!-- Hour markers -->
+        <circle cx="50" cy="28" r="2" fill="#d97706"/>
+        <circle cx="72" cy="55" r="2" fill="#d97706"/>
+        <circle cx="50" cy="82" r="2" fill="#d97706"/>
+        <circle cx="28" cy="55" r="2" fill="#d97706"/>
+        
+        <!-- Hour hand -->
+        <line x1="50" y1="55" x2="50" y2="40" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
+        <!-- Minute hand -->
+        <line x1="50" y1="55" x2="50" y2="25" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
+        
+        <!-- Center dot -->
+        <circle cx="50" cy="55" r="3" fill="#d97706"/>
+        
+        <!-- Left bell -->
+        <rect x="20" y="30" width="8" height="8" rx="2" fill="#f59e0b"/>
+        <circle cx="24" cy="28" r="2" fill="#d97706"/>
+        <!-- Right bell -->
+        <rect x="72" y="30" width="8" height="8" rx="2" fill="#f59e0b"/>
+        <circle cx="76" cy="28" r="2" fill="#d97706"/>
+      </svg>
     </div>
 
     <!-- Input for setting time -->
     <input 
       type="number" 
       id="minutesInput" 
-      placeholder="Minutes" 
-      class="w-full border-2 border-purple-300 rounded-lg p-3 text-center mb-6 text-lg"
+      placeholder="Enter minutes" 
+      class="w-64 border-4 border-orange-400 rounded-xl p-4 text-center text-2xl font-semibold text-orange-700 placeholder-orange-300 focus:outline-none focus:ring-4 focus:ring-orange-300 transition bg-orange-50"
       min="0"
       max="59"
     >
 
     <!-- Buttons -->
-    <div class="flex gap-4 mb-6">
+    <div class="flex gap-3 mb-6">
       <button 
         id="startBtn" 
-        class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition"
+        class="bg-orange-400 hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-xl transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
       >
-        Start
+        ▶️ Start
       </button>
       <button 
         id="pauseBtn" 
-        class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-lg transition"
+        class="bg-orange-400 hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-xl transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
       >
-        Pause
+        ⏸️ Pause
       </button>
       <button 
         id="resetBtn" 
-        class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg transition"
+        class="bg-orange-400 hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-xl transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
       >
-        Reset
+        🔄 Reset
       </button>
     </div>
 
     <!-- Status -->
-    <p id="status" class="text-center text-gray-500 font-semibold">Ready to start</p>
+    <p id="status" class="text-center text-orange-700 font-semibold text-lg h-6">Ready to start ✨</p>
+
+    <!-- Snooze Button (hidden until timer ends) -->
+    <button 
+      id="snoozeBtn" 
+      class="hidden bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white font-bold py-3 px-8 rounded-xl transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+    >
+      😴 Snooze (5m)
+    </button>
+
+    <!-- Preset Timer Options -->
+    <div class="mt-8 pt-8 border-t-4 border-orange-300">
+      <p class="text-center text-orange-700 font-bold mb-4 text-lg">Quick Presets:</p>
+      <div class="flex flex-wrap gap-3 justify-center">
+        <button 
+          class="preset-btn" 
+          data-minutes="4"
+        >
+          ☕ Tea (4m)
+        </button>
+        <button 
+          class="preset-btn" 
+          data-minutes="7"
+        >
+          🥚 Eggs (7m)
+        </button>
+        <button 
+          class="preset-btn" 
+          data-minutes="10"
+        >
+          🍝 Pasta (10m)
+        </button>
+        <button 
+          class="preset-btn" 
+          data-minutes="12"
+        >
+          🥖 Garlic Bread (12m)
+        </button>
+        <button 
+          class="preset-btn" 
+          data-minutes="3"
+        >
+          🍚 Rice (3m)
+        </button>
+        <button 
+          class="preset-btn" 
+          data-minutes="5"
+        >
+          ☕ Coffee (5m)
+        </button>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>

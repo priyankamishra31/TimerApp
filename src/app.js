@@ -101,5 +101,21 @@ function playNotification() {
   oscillator.stop(audioContext.currentTime + 0.5);
 }
 
+// Preset buttons
+const presetBtns = document.querySelectorAll('.preset-btn');
+presetBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const minutes = parseInt(btn.getAttribute('data-minutes'));
+    minutesInput.value = minutes;
+    timeRemaining = minutes * 60;
+    updateDisplay();
+    status.textContent = `${btn.textContent} selected`;
+    
+    // Highlight active preset button
+    presetBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
 // Initialize display
 updateDisplay();
