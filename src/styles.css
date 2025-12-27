@@ -1,0 +1,18 @@
+/* Custom animations and styles (if needed) */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+#timerDisplay {
+  transition: all 0.3s ease;
+}

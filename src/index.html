@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cute Timer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-b from-pink-100 to-purple-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white rounded-3xl shadow-2xl p-8 w-80">
+    <!-- Header -->
+    <h1 class="text-4xl font-bold text-center text-purple-600 mb-8">⏰ Timer</h1>
+
+    <!-- Timer Display -->
+    <div id="timerDisplay" class="text-7xl font-bold text-center text-purple-700 mb-8 font-mono">
+      00:00
+    </div>
+
+    <!-- Input for setting time -->
+    <input 
+      type="number" 
+      id="minutesInput" 
+      placeholder="Minutes" 
+      class="w-full border-2 border-purple-300 rounded-lg p-3 text-center mb-6 text-lg"
+      min="0"
+      max="59"
+    >
+
+    <!-- Buttons -->
+    <div class="flex gap-4 mb-6">
+      <button 
+        id="startBtn" 
+        class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition"
+      >
+        Start
+      </button>
+      <button 
+        id="pauseBtn" 
+        class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-lg transition"
+      >
+        Pause
+      </button>
+      <button 
+        id="resetBtn" 
+        class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg transition"
+      >
+        Reset
+      </button>
+    </div>
+
+    <!-- Status -->
+    <p id="status" class="text-center text-gray-500 font-semibold">Ready to start</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
