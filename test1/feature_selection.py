@@ -8,6 +8,8 @@ Deterministic feature selection pipeline:
        - Lower missingness
        - Lower average correlation within tie group
        - Alphabetical fallback
+
+       I'm starting the coding of this project with Configuration setup (keep the entire project in mind so we don't have to redo when do UI and finalised ass other feature) , give me the best setup for this keeping all the best practice and coding principles in mind
 """
 
 import numpy as np
