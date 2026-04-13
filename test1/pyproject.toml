@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "linear-regression-tool"
+version = "1.0.0"
+description = "SAS PROC REG / PROC GLM to Python linear regression pipeline"
+requires-python = ">=3.11"
+readme = "README.md"
+license = { text = "Internal — Risk Science Team" }
+
+dependencies = [
+    "statsmodels>=0.14",
+    "pandas>=2.0",
+    "numpy>=1.26",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+    "scipy>=1.11",
+    "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+notebook-ui = [
+    "ipywidgets>=8.1",
+    "IPython>=8.0",
+]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.1",
+    "black>=23.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=src/linear_regression_tool --cov-report=term-missing -v"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]

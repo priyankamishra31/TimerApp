@@ -1,0 +1,192 @@
+# =============================================================================
+#  LinearRegressionTool — Configuration File
+#  SAS PROC REG / PROC GLM → Python (statsmodels)
+# =============================================================================
+#
+#  HOW TO USE THIS FILE
+#  --------------------
+#  1. Edit every field marked  ← REQUIRED  before running the pipeline.
+#  2. Fields marked  ← OPTIONAL  have sensible defaults. Change only if needed.
+#  3. Fields marked  ← PENDING OD-N  are not yet active. Leave as-is.
+#  4. Run:  from linear_regression_tool import RegressionPipeline
+#           pipeline = RegressionPipeline("path/to/this/config.yaml")
+#           pipeline.run()
+#
+#  VALIDATION
+#  ----------
+#  The pipeline validates this file before doing anything else. If any
+#  field is wrong or missing you will see a clear error message telling you
+#  exactly what to fix. The pipeline will not start with an invalid config.
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+#  DATA
+#  Controls where your data comes from and what the target variable is.
+# -----------------------------------------------------------------------------
+data:
+
+  # Where is your data coming from?
+  # Valid values: csv | excel | dataframe
+  # ← REQUIRED
+  source_type: YOUR_SOURCE_TYPE_HERE
+
+  # Full path to your data file.
+  # Required when source_type is 'csv' or 'excel'.
+  # Must match source_type: csv → .csv file, excel → .xlsx file.
+  # Omit (or set to null) when source_type is 'dataframe'.
+  # ← REQUIRED for csv / excel
+  file_path: /path/to/your/data.csv
+
+  # The name of the column in your dataset that is the target variable (y).
+  # ← REQUIRED
+  target_variable: YOUR_TARGET_HERE
+
+  # Is your target variable pre-binned (e.g. has a small number of discrete
+  # ranks rather than continuous values)?
+  # Set to true if your target has been binned upstream.
+  # ← OPTIONAL  (default: false)
+  target_is_binned: false
+
+  # Have your feature variables already been encoded (e.g. WoE-encoded,
+  # dummy-encoded) before being passed to this pipeline?
+  # true  → the encoding step is skipped entirely (most common case)
+  # false → set encoding.method below to specify how to encode
+  # ← REQUIRED
+  variables_are_encoded: true
+
+
+# -----------------------------------------------------------------------------
+#  ENCODING
+#  Only relevant when data.variables_are_encoded is false.
+#  Ignored (with a warning) when variables_are_encoded is true.
+# -----------------------------------------------------------------------------
+encoding:
+
+  # Should the pipeline apply an encoding step?
+  # Must be false when data.variables_are_encoded is true.
+  # ← OPTIONAL  (default: false)
+  apply_encoding: false
+
+  # Which encoding method to apply?
+  # Valid values:
+  #   dummy        → one-hot encoding, drop-last convention (matches SAS CLASS)
+  #   standard_woe → standard Weight of Evidence encoding
+  #   custom_woe   → custom insurance linear-target WoE  ← PENDING OD-3
+  # Required when apply_encoding is true.
+  # ← OPTIONAL  (default: dummy)
+  method: dummy
+
+  # Which columns should be encoded?
+  # Leave empty to encode all non-numeric columns automatically.
+  # ← OPTIONAL
+  columns: []
+
+
+# -----------------------------------------------------------------------------
+#  MODELLING CONTROLS
+#  Controls the type of model, variable selection, and multicollinearity.
+# -----------------------------------------------------------------------------
+modelling_controls:
+
+  # Which type of regression model to fit?
+  # Valid values:
+  #   OLS    → Ordinary Least Squares (SAS PROC REG equivalent)  ← active
+  #   GLM    → Generalised Linear Model (SAS PROC GLM equivalent) ← active
+  #   Robust → Huber M-estimation                                 ← PENDING OD-2
+  # ← REQUIRED
+  model_type: OLS
+
+  # GLM only — which distribution family to use?
+  # Required when model_type is GLM. Ignored otherwise.
+  # Valid values:
+  #   gaussian         → Normal distribution, identity link  ← active
+  #   binomial         → Binomial distribution, logit link   ← PENDING OD-1
+  #   poisson          → Poisson distribution, log link      ← PENDING OD-1
+  #   negative_binomial → Neg. Binomial, log link            ← PENDING OD-1
+  # ← REQUIRED when model_type is GLM
+  # glm_distribution: gaussian
+
+  # Variable selection method.
+  # Valid values: stepwise | forward | backward | manual
+  # stepwise is the priority method and mirrors SAS SELECTION=STEPWISE exactly.
+  # ← REQUIRED
+  selection_method: stepwise
+
+  # Which criterion drives variable entry / removal decisions?
+  # Valid values:
+  #   p_value  → p-value only  (mirrors SAS SLENTRY / SLSTAY)
+  #   aic_bic  → AIC and BIC
+  #   adj_r2   → Adjusted R²
+  #   all      → all three criteria must be satisfied simultaneously
+  # ← OPTIONAL  (default: all)
+  selection_criterion: all
+
+  # p-value threshold for a variable to ENTER the model.
+  # Must be between 0 and 1 (exclusive) and strictly less than
+  # p_value_removal.
+  # Mirrors SAS SLENTRY=.
+  # Ignored when selection_criterion is adj_r2 or aic_bic.
+  # ← OPTIONAL  (default: 0.05)
+  p_value_entry: 0.05
+
+  # p-value threshold above which a variable is REMOVED from the model.
+  # Must be between 0 and 1 (exclusive) and strictly greater than
+  # p_value_entry.
+  # Mirrors SAS SLSTAY=.
+  # Ignored when selection_criterion is adj_r2 or aic_bic.
+  # ← OPTIONAL  (default: 0.10)
+  p_value_removal: 0.10
+
+  # Variance Inflation Factor threshold for multicollinearity detection.
+  # Must be greater than 1.0.  Industry standard is 10.0.
+  # ← OPTIONAL  (default: 10.0)
+  vif_threshold: 10.0
+
+  # What should the pipeline do when a variable exceeds vif_threshold?
+  # Valid values:
+  #   warn        → log a warning and continue (variable stays in the model)
+  #   auto_remove → iteratively remove the highest-VIF variable and recompute
+  #                 until all remaining variables are below the threshold
+  # ← OPTIONAL  (default: warn)
+  vif_action: warn
+
+
+# -----------------------------------------------------------------------------
+#  FEATURE SELECTION
+#  Additional controls for the variable selection step.
+# -----------------------------------------------------------------------------
+feature_selection:
+
+  # Explicit list of variables to include in the model.
+  # Required when modelling_controls.selection_method is 'manual'.
+  # Ignored (with a warning) when selection_method is anything else.
+  # ← REQUIRED when selection_method is manual
+  manual_variables: []
+
+
+# -----------------------------------------------------------------------------
+#  OUTPUT
+#  Controls where results are saved and in what formats.
+# -----------------------------------------------------------------------------
+output:
+
+  # Base directory for all output files.
+  # The pipeline creates subdirectories: reports/, html/, plots/,
+  # logs/, artefacts/ under this path.
+  # Required when formats includes 'html', 'csv', 'excel', or 'log'.
+  # ← REQUIRED (unless only outputting to console)
+  base_dir: ./outputs
+
+  # Which output formats to produce?
+  # Valid values (list, at least one required):
+  #   csv     → model_coefficients.csv, iteration_log.csv, model_summary.csv
+  #   excel   → model_report.xlsx (multi-sheet)
+  #   html    → self-contained HTML report (mirrors SAS ODS HTML)
+  #   console → formatted summary to stdout  (mirrors SAS log window)
+  #   log     → timestamped .log file
+  # ← REQUIRED
+  formats:
+    - csv
+    - html
+    - console
