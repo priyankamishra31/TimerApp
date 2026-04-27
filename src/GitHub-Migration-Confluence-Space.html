@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GitHub Enterprise → GitHub EU Migration | Confluence Space</title>
+<style>
+  :root {
+    --blue-dark: #0052CC;
+    --blue-mid: #0065FF;
+    --blue-light: #DEEBFF;
+    --blue-xlight: #F4F8FF;
+    --teal: #00B8D9;
+    --green: #36B37E;
+    --green-light: #E3FCEF;
+    --yellow: #FF991F;
+    --yellow-light: #FFFAE6;
+    --red: #DE350B;
+    --red-light: #FFEBE6;
+    --purple: #6554C0;
+    --purple-light: #EAE6FF;
+    --grey-dark: #172B4D;
+    --grey-mid: #42526E;
+    --grey-light: #DFE1E6;
+    --grey-xlight: #F4F5F7;
+    --white: #FFFFFF;
+    --sidebar-w: 260px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--grey-dark);
+    background: var(--grey-xlight);
+    line-height: 1.6;
+  }
+
+  /* ── TOP NAV ── */
+  .topnav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--blue-dark);
+    height: 48px;
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  .topnav .brand { color: white; font-size: 18px; font-weight: 700; letter-spacing: -.5px; }
+  .topnav .breadcrumb { color: rgba(255,255,255,.65); font-size: 13px; }
+  .topnav .breadcrumb span { color: white; font-weight: 600; }
+  .topnav .badge {
+    margin-left: auto;
+    background: var(--green); color: white;
+    font-size: 11px; font-weight: 700;
+    padding: 3px 9px; border-radius: 12px;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; margin-top: 48px; min-height: calc(100vh - 48px); }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--white);
+    border-right: 1px solid var(--grey-light);
+    position: fixed; top: 48px; bottom: 0; left: 0;
+    overflow-y: auto;
+    padding: 16px 0;
+  }
+  .sidebar-title {
+    padding: 4px 16px 8px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--grey-mid);
+  }
+  .sidebar a {
+    display: block;
+    padding: 6px 16px;
+    color: var(--grey-dark);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 3px solid transparent;
+    transition: all .15s;
+  }
+  .sidebar a:hover { background: var(--blue-xlight); color: var(--blue-dark); }
+  .sidebar a.active { background: var(--blue-light); color: var(--blue-dark); border-left-color: var(--blue-dark); font-weight: 600; }
+  .sidebar a.sub { padding-left: 28px; font-size: 12px; color: var(--grey-mid); }
+  .sidebar-section { margin-top: 16px; border-top: 1px solid var(--grey-light); padding-top: 8px; }
+
+  /* ── CONTENT ── */
+  .content {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 32px 48px 80px;
+    max-width: 1100px;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--blue-dark);
+  }
+  .page-label {
+    display: inline-block;
+    background: var(--blue-light); color: var(--blue-dark);
+    font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: .5px;
+    margin-bottom: 10px;
+  }
+  .page-title { font-size: 28px; font-weight: 700; color: var(--grey-dark); line-height: 1.2; }
+  .page-meta { margin-top: 10px; display: flex; gap: 20px; flex-wrap: wrap; }
+  .page-meta span { font-size: 12px; color: var(--grey-mid); }
+  .page-meta strong { color: var(--grey-dark); }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 48px; scroll-margin-top: 68px; }
+  h2.section-title {
+    font-size: 20px; font-weight: 700;
+    color: var(--grey-dark);
+    padding: 10px 0 10px;
+    border-bottom: 2px solid var(--blue-light);
+    margin-bottom: 20px;
+  }
+  h2.section-title .icon { margin-right: 8px; }
+  h3.subsection {
+    font-size: 15px; font-weight: 700;
+    color: var(--blue-dark);
+    margin: 24px 0 10px;
+  }
+  h4.sub2 {
+    font-size: 13px; font-weight: 700;
+    color: var(--grey-mid);
+    text-transform: uppercase; letter-spacing: .5px;
+    margin: 16px 0 8px;
+  }
+  p { margin-bottom: 10px; color: var(--grey-dark); line-height: 1.65; }
+
+  /* ── CALLOUT PANELS ── */
+  .panel {
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    border-left: 4px solid;
+    font-size: 13px;
+  }
+  .panel-info { background: var(--blue-xlight); border-color: var(--blue-mid); }
+  .panel-warn { background: var(--yellow-light); border-color: var(--yellow); }
+  .panel-success { background: var(--green-light); border-color: var(--green); }
+  .panel-danger { background: var(--red-light); border-color: var(--red); }
+  .panel-note { background: var(--purple-light); border-color: var(--purple); }
+  .panel-title { font-weight: 700; margin-bottom: 4px; }
+  .panel-info .panel-title { color: var(--blue-dark); }
+  .panel-warn .panel-title { color: #974F0C; }
+  .panel-success .panel-title { color: #006644; }
+  .panel-danger .panel-title { color: var(--red); }
+  .panel-note .panel-title { color: var(--purple); }
+
+  /* ── STATUS BADGES ── */
+  .status {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: .3px;
+  }
+  .status-todo { background: var(--grey-xlight); color: var(--grey-mid); border: 1px solid var(--grey-light); }
+  .status-inprog { background: var(--blue-light); color: var(--blue-dark); border: 1px solid #B3D4FF; }
+  .status-done { background: var(--green-light); color: #006644; border: 1px solid #B3F5E0; }
+  .status-warn { background: var(--yellow-light); color: #974F0C; border: 1px solid #FFE380; }
+  .status-block { background: var(--red-light); color: var(--red); border: 1px solid #FFBDAD; }
+
+  /* ── TABLES ── */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 20px; }
+  th { background: var(--grey-dark); color: white; text-align: left; padding: 9px 12px; font-weight: 600; font-size: 12px; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--grey-light); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--grey-xlight); }
+  tr:hover td { background: var(--blue-xlight); }
+  td code { background: var(--grey-xlight); padding: 1px 4px; border-radius: 3px; font-family: var(--mono); font-size: 11px; }
+  th code { background: rgba(255,255,255,.15); padding: 1px 4px; border-radius: 3px; font-family: var(--mono); }
+
+  /* ── CODE ── */
+  code { font-family: var(--mono); font-size: 12px; background: var(--grey-xlight); padding: 1px 5px; border-radius: 3px; }
+  pre { background: #1e2432; color: #c9d1d9; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 12px; margin: 12px 0; }
+  pre code { background: none; color: inherit; padding: 0; }
+
+  /* ── TIMELINE / PHASES ── */
+  .phase-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .phase-card {
+    background: white; border: 1px solid var(--grey-light);
+    border-radius: 6px; padding: 16px;
+    border-top: 4px solid;
+  }
+  .phase-card.p0 { border-top-color: var(--teal); }
+  .phase-card.p1 { border-top-color: var(--blue-mid); }
+  .phase-card.p2 { border-top-color: var(--yellow); }
+  .phase-card.p3 { border-top-color: var(--red); }
+  .phase-card.p4 { border-top-color: var(--green); }
+  .phase-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .phase-card .week { font-size: 11px; color: var(--grey-mid); font-weight: 600; margin-bottom: 8px; }
+  .phase-card ul { padding-left: 16px; font-size: 12px; color: var(--grey-mid); }
+  .phase-card ul li { margin-bottom: 3px; }
+
+  /* ── TIMELINE BAR ── */
+  .timeline { background: white; border: 1px solid var(--grey-light); border-radius: 6px; overflow: hidden; margin: 20px 0; }
+  .timeline-header { background: var(--grey-dark); color: white; padding: 10px 16px; font-size: 13px; font-weight: 700; }
+  .timeline-row { display: flex; align-items: center; padding: 8px 16px; border-bottom: 1px solid var(--grey-light); gap: 12px; }
+  .timeline-row:last-child { border-bottom: none; }
+  .timeline-label { width: 180px; flex-shrink: 0; font-size: 12px; font-weight: 600; }
+  .timeline-weeks { font-size: 11px; color: var(--grey-mid); width: 80px; flex-shrink: 0; }
+  .timeline-bar-wrap { flex: 1; background: var(--grey-xlight); border-radius: 20px; height: 12px; position: relative; }
+  .timeline-bar { height: 100%; border-radius: 20px; }
+  .bar-teal { background: var(--teal); }
+  .bar-blue { background: var(--blue-mid); }
+  .bar-yellow { background: var(--yellow); }
+  .bar-red { background: var(--red); }
+  .bar-green { background: var(--green); }
+
+  /* ── WAVE TABLE ── */
+  .wave-card {
+    background: white; border: 1px solid var(--grey-light);
+    border-left: 5px solid; border-radius: 4px;
+    padding: 12px 16px; margin: 8px 0;
+  }
+  .wave-card.w1 { border-left-color: #36B37E; }
+  .wave-card.w2 { border-left-color: #00B8D9; }
+  .wave-card.w3 { border-left-color: #0065FF; }
+  .wave-card.w4 { border-left-color: #6554C0; }
+  .wave-card.w5 { border-left-color: #FF991F; }
+  .wave-card.w6 { border-left-color: #DE350B; }
+  .wave-card.w7 { border-left-color: #172B4D; }
+  .wave-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .wave-name { font-weight: 700; font-size: 13px; }
+  .wave-count { background: var(--grey-xlight); color: var(--grey-mid); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+  .wave-desc { font-size: 12px; color: var(--grey-mid); }
+
+  /* ── RISK MATRIX ── */
+  .risk-high { background: var(--red-light); }
+  .risk-medium { background: var(--yellow-light); }
+  .risk-low { background: var(--green-light); }
+
+  /* ── RACI ── */
+  .raci-r { background: var(--red-light); color: var(--red); font-weight: 700; text-align: center; border-radius: 3px; padding: 1px 6px; }
+  .raci-a { background: var(--yellow-light); color: #974F0C; font-weight: 700; text-align: center; border-radius: 3px; padding: 1px 6px; }
+  .raci-c { background: var(--blue-light); color: var(--blue-dark); font-weight: 700; text-align: center; border-radius: 3px; padding: 1px 6px; }
+  .raci-i { background: var(--grey-xlight); color: var(--grey-mid); font-weight: 700; text-align: center; border-radius: 3px; padding: 1px 6px; }
+
+  /* ── CHANGE COMPARISON ── */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .compare-box { border-radius: 6px; padding: 14px; }
+  .compare-box.before { background: #FFF8E7; border: 1px solid #FFE380; }
+  .compare-box.after { background: var(--green-light); border: 1px solid #B3F5E0; }
+  .compare-box h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .5px; font-weight: 700; margin-bottom: 8px; }
+  .compare-box.before h4 { color: #974F0C; }
+  .compare-box.after h4 { color: #006644; }
+  .compare-box ul { padding-left: 16px; font-size: 12px; }
+  .compare-box ul li { margin-bottom: 4px; }
+
+  /* ── CHECKLIST ── */
+  .checklist { background: white; border: 1px solid var(--grey-light); border-radius: 6px; padding: 0; overflow: hidden; margin: 16px 0; }
+  .checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--grey-light); font-size: 13px; }
+  .checklist-item:last-child { border-bottom: none; }
+  .checklist-item input { margin-top: 2px; flex-shrink: 0; }
+  .checklist-item label { cursor: pointer; }
+  .checklist-item .owner { margin-left: auto; font-size: 11px; color: var(--grey-mid); white-space: nowrap; }
+
+  /* ── PRINT / EXPORT NOTE ── */
+  .export-bar {
+    background: var(--blue-dark); color: white;
+    padding: 10px 20px; font-size: 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  ul, ol { padding-left: 20px; margin: 8px 0 12px; }
+  li { margin-bottom: 4px; }
+  strong { font-weight: 700; }
+  em { font-style: italic; }
+
+  @media print {
+    .sidebar, .topnav { display: none; }
+    .content { margin-left: 0; padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="brand">📘 Confluence</div>
+  <div class="breadcrumb">DevEx Platform Team › <span>GitHub Migration Space</span></div>
+  <div class="badge">🚀 Active Project</div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Space Navigation</div>
+    <a href="#overview" class="active">📋 Project Overview</a>
+    <a href="#context" class="sub">Context & Goals</a>
+    <a href="#what-changes" class="sub">What Changes</a>
+    <a href="#architecture" class="sub">Architecture</a>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Migration Phases</div>
+      <a href="#phase0">🏗️ Phase 0 — Foundation</a>
+      <a href="#phase1" class="sub">Phase 1 — Backstage</a>
+      <a href="#phase2" class="sub">Phase 2 — Pilot</a>
+      <a href="#phase3" class="sub">Phase 3 — Bulk Migration</a>
+      <a href="#phase4" class="sub">Phase 4 — Hardening</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Governance</div>
+      <a href="#governance">📜 Governance Policy</a>
+      <a href="#notebook-policy" class="sub">Notebook Policy</a>
+      <a href="#data-policy" class="sub">Data File Policy</a>
+      <a href="#exception-process" class="sub">Exception Process</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Operations</div>
+      <a href="#wave-plan">🌊 Wave Plan</a>
+      <a href="#roles">👥 Roles & RACI</a>
+      <a href="#comms">📣 Communication Plan</a>
+      <a href="#validation">✅ Validation & Rollback</a>
+      <a href="#risks">⚠️ Risk Register</a>
+      <a href="#timeline">📅 Master Timeline</a>
+      <a href="#dod">🏁 Definition of Done</a>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div class="page-label">Migration Project</div>
+      <h1 class="page-title">GitHub Enterprise Server → GitHub EU<br/>Migration &amp; Governance Rollout</h1>
+      <div class="page-meta">
+        <span>📅 Version: <strong>1.0</strong></span>
+        <span>👤 Owner: <strong>DevEx Platform Team</strong></span>
+        <span>⏱ Timeline: <strong>16 Weeks</strong></span>
+        <span>📦 Repos: <strong>~300</strong></span>
+        <span>🔧 Tool: <strong>github-governance CLI + Backstage</strong></span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: OVERVIEW -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="overview">
+      <h2 class="section-title"><span class="icon">📋</span>Project Overview</h2>
+
+      <div class="panel panel-info">
+        <div class="panel-title">Mission Statement</div>
+        We are migrating approximately 300 repositories from our existing <strong>GitHub Enterprise Server (GHES)</strong> instance to <strong>GitHub EU</strong>. In GitHub EU, repository settings and standards are controlled by Backstage and platform automation rather than per-engineer manual configuration. Alongside the physical migration, we are rolling out <strong>automated governance</strong> across all repositories.
+      </div>
+
+      <h3 class="subsection" id="context">Context &amp; Goals</h3>
+      <p>GitHub EU is managed through <strong>Backstage</strong> as the central developer portal. New repos must be created from Backstage templates. TechDocs is the target for internal documentation (mkdocs-based).</p>
+
+      <p>The <code>github-governance</code> CLI is the single source of truth for what a governed repository looks like. It writes and audits governance files, is wired into Backstage so new repos are born governed, and runs in batch mode to migrate existing repos through governance PRs.</p>
+
+      <p><strong>Two core policies enforced post-migration:</strong></p>
+      <ul>
+        <li><strong>Notebook policy:</strong> <code>.ipynb</code> files are permitted, but no cell outputs or execution counts may ever be committed.</li>
+        <li><strong>Data file policy:</strong> Real data files (CSV, Parquet, pickle, NumPy, databases, archives) are forbidden except for small, explicitly declared test fixtures under <code>tests/data/</code> (≤ 1 MB per file).</li>
+      </ul>
+
+      <h3 class="subsection" id="what-changes">What Changes: GHES vs GitHub EU</h3>
+      <div class="compare">
+        <div class="compare-box before">
+          <h4>⚠️ Before (GHES)</h4>
+          <ul>
+            <li>Manual repo creation via GitHub UI</li>
+            <li>No enforced notebook output policy</li>
+            <li>No data file restrictions</li>
+            <li>Ad-hoc CI/CD configuration per repo</li>
+            <li>No central software catalog</li>
+            <li>Branch protection configured manually</li>
+            <li>No pre-commit hooks standard</li>
+            <li>Engineers commit data files accidentally</li>
+            <li>Webhook/integration configs vary by team</li>
+            <li>No drift detection</li>
+          </ul>
+        </div>
+        <div class="compare-box after">
+          <h4>✅ After (GitHub EU + Governance)</h4>
+          <ul>
+            <li>All repos created from Backstage templates</li>
+            <li>Notebook outputs auto-stripped by pre-commit</li>
+            <li>Data files blocked by pre-commit + CI gate</li>
+            <li>Standard CI via reusable central workflow</li>
+            <li>Backstage software catalog (source of truth)</li>
+            <li>Branch protection enforced: <code>governance-ci</code> required</li>
+            <li>Standard pre-commit hooks across all repos</li>
+            <li>CI blocks any PR adding data outside allowlist</li>
+            <li>Webhooks inventoried and migrated</li>
+            <li>Weekly drift detection + Grafana dashboard</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="subsection">Functionality That Does NOT Transfer Automatically</h3>
+      <table>
+        <thead><tr><th>Feature / Capability</th><th>Status After Migration</th><th>How to Migrate / Restore</th></tr></thead>
+        <tbody>
+          <tr><td>Custom GitHub Actions workflows</td><td><span class="status status-warn">⚠️ Review Required</span></td><td>Inventory existing CI. Flag any using GHES-specific runners or secrets. Migrate to GitHub EU runners.</td></tr>
+          <tr><td>GHES Webhooks &amp; integrations</td><td><span class="status status-block">🚫 Breaks</span></td><td>Inventory all webhooks in Phase 0. Update target URLs as part of migration automation script.</td></tr>
+          <tr><td>Deploy keys / SSH keys</td><td><span class="status status-block">🚫 Does Not Transfer</span></td><td>Recreate deploy keys on GitHub EU repos. Document per-repo in inventory spreadsheet.</td></tr>
+          <tr><td>GitHub Packages (registry)</td><td><span class="status status-warn">⚠️ Separate Work</span></td><td>GitHub Packages namespace changes. Teams must update registry references in their pipelines.</td></tr>
+          <tr><td>GHES-specific admin settings</td><td><span class="status status-todo">📋 Replaced</span></td><td>Replaced by org-level defaults in GitHub EU + Backstage automation. No manual action needed.</td></tr>
+          <tr><td>Large committed data files</td><td><span class="status status-block">🚫 Policy Violation</span></td><td>Teams must clean these up. DevEx flags in inventory. CI starts in warn mode giving teams time to remediate.</td></tr>
+          <tr><td>Notebook cell outputs in history</td><td><span class="status status-warn">⚠️ Legacy — Tolerated</span></td><td>CI only checks PR diffs, not full tree. Legacy outputs in history are tolerated; teams clean forward.</td></tr>
+          <tr><td>Bespoke CI / monorepos (Tier 4)</td><td><span class="status status-warn">⚠️ Manual Handling</span></td><td>Wave 7 — DevEx schedules 1:1 working session with repo owner to handle individually.</td></tr>
+          <tr><td>CODEOWNERS files</td><td><span class="status status-done">✅ Preserved</span></td><td>Migrated intact by GH Enterprise Importer. Governance PRs CC existing CODEOWNERS.</td></tr>
+          <tr><td>Git history, branches, tags</td><td><span class="status status-done">✅ Fully Preserved</span></td><td>GH Enterprise Importer migrates complete history. Post-migration: verify commit count matches.</td></tr>
+          <tr><td>Open PRs and Issues</td><td><span class="status status-done">✅ Migrated</span></td><td>Carried over by GH Enterprise Importer. GHES remains read-only for 90 days post-migration.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection" id="architecture">System Architecture</h3>
+
+      <div class="panel panel-note">
+        <div class="panel-title">Architecture Overview</div>
+        The system has 5 integrated layers: <strong>Engineer local</strong> (pre-commit hooks), <strong>GitHub EU</strong> (repository + branch protection), <strong>GitHub Actions CI</strong> (governance workflow), <strong>github-governance CLI</strong> (write/audit tool), and <strong>Backstage</strong> (software catalog + templates).
+      </div>
+
+      <h4 class="sub2">Data Flow: Engineer → Merge</h4>
+      <pre><code>ENGINEER (local)
+  git commit → [pre-commit hooks] → blocked/fixed OR clean commit
+  git push → PR opened on GitHub EU
+        ↓
+GITHUB EU — Repository contains (written by github-governance):
+  ├── .pre-commit-config.yaml
+  ├── .github/workflows/governance.yml  (calls central reusable wf)
+  ├── .gitignore
+  ├── catalog-info.yaml
+  └── mkdocs.yml
+
+  Branch Protection: governance-ci ✅ required check
+        ↓
+GITHUB ACTIONS CI
+  governance.yml triggers on every PR
+  ├── notebook-guard: FAIL if .ipynb has outputs/execution counts
+  └── data-file-guard: FAIL if data file outside tests/data/ or > 1MB
+        ↓
+CENTRAL GOVERNANCE REPO (org/governance)
+  ├── .github/workflows/governance-reusable.yml
+  ├── spec/  (versioned canonical file templates)
+  └── CHANGELOG.md
+        ↓
+MONITORING
+  Weekly scheduled: github-governance audit --all
+  ├── feeds Grafana dashboard
+  ├── opens GitHub issues for drifted repos
+  └── Slack alert to #devex-oncall if drift &gt; threshold</code></pre>
+
+      <h4 class="sub2">New Repo Flow (Post-Migration Steady State)</h4>
+      <pre><code>1. Engineer clicks "Create Repo" in Backstage
+2. Backstage runs template scaffolder
+3. Scaffolder action calls: github-governance apply &lt;new-repo&gt;
+   ├── writes .pre-commit-config.yaml
+   ├── writes .github/workflows/governance.yml
+   ├── writes .gitignore
+   ├── writes catalog-info.yaml [governance/spec-version: 1.x]
+   └── writes mkdocs.yml
+4. Repo exists in GitHub EU with all governance files in initial commit
+5. Branch protection applied: governance-ci is a required check
+6. Backstage catalog ingests catalog-info.yaml → repo appears in catalog
+7. Engineer opens first PR → CI governance check runs immediately</code></pre>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: PHASE 0 -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="phase0">
+      <h2 class="section-title"><span class="icon">🏗️</span>Phase 0 — Foundation &amp; Inventory <small style="font-size:13px; font-weight:400; color:#42526E;">(Weeks 1–2)</small></h2>
+
+      <div class="panel panel-success">
+        <div class="panel-title">Objective</div>
+        Establish a complete, authoritative picture of all repos. Define policy. Set up GitHub EU infrastructure. Ensure tooling is ready before any repo is touched.
+      </div>
+
+      <h3 class="subsection">5.1 Repo Inventory</h3>
+      <p><strong>Who:</strong> DevEx engineer &nbsp;|&nbsp; <strong>How:</strong> GitHub Enterprise Server admin API</p>
+      <p>Pull a full repo list and enrich each entry with:</p>
+      <table>
+        <thead><tr><th>Field</th><th>Source / Method</th></tr></thead>
+        <tbody>
+          <tr><td>Primary language</td><td><code>GHES API GET /repos/:owner/:repo/languages</code></td></tr>
+          <tr><td>Last commit date</td><td><code>GHES API GET /repos/:owner/:repo → pushed_at</code></td></tr>
+          <tr><td>Active contributors (12mo)</td><td><code>GHES API GET /repos/:owner/:repo/contributors</code></td></tr>
+          <tr><td>Contains .ipynb files</td><td><code>GHES API code search ?q=extension:ipynb+repo:...</code></td></tr>
+          <tr><td>Contains data files</td><td>GHES API code search for each blocked extension</td></tr>
+          <tr><td>Existing violations (outputs in notebooks)</td><td><code>nbstripout --verify</code> run against each .ipynb found</td></tr>
+          <tr><td>Large committed data files</td><td><code>git ls-files --others + size check</code></td></tr>
+          <tr><td>Existing CI setup</td><td>Check for <code>.github/workflows/</code> directory</td></tr>
+          <tr><td>Webhooks &amp; integrations</td><td><code>GHES API GET /repos/:owner/:repo/hooks</code></td></tr>
+          <tr><td>Team / BU ownership</td><td>Cross-reference Backstage catalog or CODEOWNERS</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Output:</strong> A spreadsheet and a YAML file usable as input to <code>github-governance</code> batch commands.</p>
+
+      <h3 class="subsection">5.2 Repo Tier Classification</h3>
+      <p>Assign every repo a tier in the inventory:</p>
+      <table>
+        <thead><tr><th>Tier</th><th>Criteria</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Tier 1 — Inactive</strong></td><td>No commits in 6+ months, no notebooks, no data files</td><td>Archived utilities, old scripts</td></tr>
+          <tr><td><strong>Tier 2 — Standard Active</strong></td><td>Active, Python/data, no significant violations</td><td>Most data science and ML repos</td></tr>
+          <tr><td><strong>Tier 3 — Complex</strong></td><td>Existing violations (notebooks with outputs in history, committed data), large teams, or production pipelines</td><td>Core model training repos</td></tr>
+          <tr><td><strong>Tier 4 — Special</strong></td><td>Bespoke CI, monorepos, policy exceptions required</td><td>Platform infrastructure repos</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">5.3 Policy Sign-off <span class="status status-block">🔴 Hard Gate</span></h3>
+      <p>Produce a one-page governance policy document and obtain written sign-off from:</p>
+      <ul>
+        <li>Engineering VP or equivalent</li>
+        <li>At least one representative from each major product team</li>
+        <li>Security team</li>
+      </ul>
+      <div class="panel panel-danger">
+        <div class="panel-title">Hard Gate: Phase 3 does not start without this sign-off</div>
+        The governance policy (Section 3) is the authoritative policy statement. Changes require stakeholder sign-off. Do not begin bulk migration until all three parties have signed.
+      </div>
+
+      <h3 class="subsection">5.4 GitHub EU Org Infrastructure</h3>
+      <table>
+        <thead><tr><th>Item</th><th>Action</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr><td>GitHub EU org created</td><td>Confirm org exists with correct settings</td><td>DevEx lead</td></tr>
+          <tr><td>Default branch protection template</td><td>Configure: require governance-ci, require PR review, disallow force push</td><td>DevEx engineer</td></tr>
+          <tr><td>GitHub Actions runner pool</td><td>Confirm GitHub-hosted runners available, or configure self-hosted</td><td>DevEx engineer</td></tr>
+          <tr><td>Central governance repo</td><td>Create <code>org/governance</code> repo; house reusable workflow and spec</td><td>DevEx engineer</td></tr>
+          <tr><td>Service account</td><td>Create <code>github-governance-bot</code> with write access to all repos</td><td>DevEx lead + org admin</td></tr>
+          <tr><td>Backstage → GitHub EU connection</td><td>Confirm Backstage can read/write repos in GitHub EU</td><td>Backstage admin</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">5.5 github-governance CLI Readiness Gate</h3>
+      <p>Validate the CLI against 5 manually chosen pilot repos before Phase 1 begins:</p>
+      <ul>
+        <li><code>apply --dry-run</code> runs without errors on all 5</li>
+        <li>Diff output is correct and matches expected governance files</li>
+        <li><code>audit</code> correctly identifies missing files on ungoverned repos</li>
+        <li><code>audit</code> correctly reports <code>clean</code> on a repo that already has governance applied</li>
+        <li>Batch mode (<code>--repo-list</code>) produces correct JSON log</li>
+        <li>Idempotency confirmed: running <code>apply</code> twice produces no diff on second run</li>
+      </ul>
+
+      <h3 class="subsection">Phase 0 Success Criteria</h3>
+      <div class="checklist">
+        <div class="checklist-item"><input type="checkbox"/><label>Inventory spreadsheet complete, every repo has a tier label and violation flags</label><span class="owner">DevEx Engineer</span></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Governance policy doc signed off by all stakeholders</label><span class="owner">DevEx Lead</span></div>
+        <div class="checklist-item"><input type="checkbox"/><label>GitHub EU org infrastructure operational</label><span class="owner">DevEx Engineer</span></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Central governance repo created with reusable workflow skeleton</label><span class="owner">DevEx Engineer</span></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Service account operational with correct permissions</label><span class="owner">DevEx Lead</span></div>
+        <div class="checklist-item"><input type="checkbox"/><label>github-governance CLI passes readiness gate on 5 pilot repos</label><span class="owner">DevEx Engineer</span></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Backstage catalog contains all GHES repos (or reconciled inventory)</label><span class="owner">Backstage Admin</span></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: PHASE 1 -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="phase1">
+      <h2 class="section-title"><span class="icon">🔗</span>Phase 1 — Backstage &amp; Governance Integration <small style="font-size:13px; font-weight:400; color:#42526E;">(Weeks 2–4)</small></h2>
+
+      <div class="panel panel-success">
+        <div class="panel-title">Objective</div>
+        Wire <code>github-governance</code> into Backstage so every new repo is born governed with zero manual steps. Publish TechDocs. Establish the governance spec at v1.0.
+      </div>
+
+      <h3 class="subsection">6.1 Governance Spec v1.0</h3>
+      <p>Define the exact set of files <code>github-governance apply</code> will write. Store as versioned templates in the central governance repo under <code>spec/v1.0/</code>:</p>
+      <table>
+        <thead><tr><th>File</th><th>What It Does</th></tr></thead>
+        <tbody>
+          <tr><td><code>.pre-commit-config.yaml</code></td><td>nbstripout hook (strips outputs), check-ipynb-outputs hook, data-file-guard hook, standard Python hooks</td></tr>
+          <tr><td><code>.github/workflows/governance.yml</code></td><td>Calls <code>org/governance/.github/workflows/governance-reusable.yml@main</code>; passes repo-specific config; runs on pull_request targeting default branch; initially deployed with <code>mode: warn</code></td></tr>
+          <tr><td><code>.gitignore</code></td><td>Standard data file extensions, Jupyter checkpoint directories, common Python artifact directories</td></tr>
+          <tr><td><code>catalog-info.yaml</code></td><td>apiVersion, kind, metadata.name, metadata.annotations including <code>governance/spec-version: 1.0</code>; spec.owner, spec.lifecycle, spec.type fields</td></tr>
+          <tr><td><code>mkdocs.yml</code></td><td>Standard MkDocs config for TechDocs pipeline</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">6.2 Backstage Template Integration</h3>
+      <p>Update all Python/data-science Backstage templates to call <code>github-governance apply &lt;new-repo&gt;</code> as a scaffolder action step after repo creation. Validate: new repo created from template has all 5 governance files in initial commit.</p>
+
+      <h3 class="subsection">6.3 TechDocs Publication</h3>
+      <p>Publish the following TechDocs pages for engineers before any migration happens:</p>
+      <ul>
+        <li>Governance overview: what it is, why it exists</li>
+        <li>Notebook policy: what's allowed, what's blocked, how the hook works, how to strip outputs manually</li>
+        <li>Data file policy: which extensions are blocked, how to use <code>tests/data/</code> allowlist, how to request an exception</li>
+        <li>Exception process: step-by-step guide with Backstage form link</li>
+        <li>FAQ / troubleshooting: common CI failures and how to fix them</li>
+      </ul>
+
+      <h3 class="subsection">6.4 Smoke Test: Net-New Repos</h3>
+      <p>Create 3 test repos via updated Backstage templates and verify all governance files present, CI behaviours correct (warn/block modes), and Backstage catalog shows the new repos correctly.</p>
+
+      <h3 class="subsection">Phase 1 Success Criteria</h3>
+      <div class="checklist">
+        <div class="checklist-item"><input type="checkbox"/><label>Governance spec v1.0 defined, version-tagged in central governance repo</label><span class="owner">DevEx Engineer</span></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Reusable governance CI workflow live in central repo</label><span class="owner">DevEx Engineer</span></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Backstage scaffolder action live and tested on 3 net-new repos</label><span class="owner">Backstage Admin</span></div>
+        <div class="checklist-item"><input type="checkbox"/><label>All 3 smoke test repos pass the full validation checklist</label><span class="owner">DevEx Engineer</span></div>
+        <div class="checklist-item"><input type="checkbox"/><label>TechDocs governance pages published and reviewed</label><span class="owner">DevEx Lead</span></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Template updates deployed for all Python/data-science templates</label><span class="owner">Backstage Admin</span></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: PHASE 2 -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="phase2">
+      <h2 class="section-title"><span class="icon">✈️</span>Phase 2 — Pilot Migration <small style="font-size:13px; font-weight:400; color:#42526E;">(Weeks 4–6)</small></h2>
+
+      <div class="panel panel-success">
+        <div class="panel-title">Objective</div>
+        Validate the full GHES → GitHub EU + governance migration workflow on a controlled cohort. Surface edge cases. Build team confidence before the bulk migration.
+      </div>
+
+      <h3 class="subsection">7.1 Pilot Cohort Selection (10–20 repos)</h3>
+      <table>
+        <thead><tr><th>Category</th><th>Count</th><th>Reason</th></tr></thead>
+        <tbody>
+          <tr><td>Tier 1 inactive repos</td><td>3–4</td><td>Validate migration tooling with minimal risk</td></tr>
+          <tr><td>Tier 2 active, no violations</td><td>5–8</td><td>Validate governance workflow under normal conditions</td></tr>
+          <tr><td>Tier 2 active, with notebook outputs in history</td><td>2–3</td><td>Validate warn-mode handling and legacy violation guidance</td></tr>
+          <tr><td>Tier 3 complex (one only)</td><td>1</td><td>Early signal on hardest cases</td></tr>
+        </tbody>
+      </table>
+      <p>Every pilot repo must have a named owner who has agreed to participate and is available for the retrospective.</p>
+
+      <h3 class="subsection">7.2 Pre-Migration Cleanup Guidance for Pilot Repos</h3>
+      <div class="panel panel-warn">
+        <div class="panel-title">Do NOT rewrite history at this stage</div>
+        For repos with existing violations: CI governance check runs in warn mode during the migration window. Teams commit to cleaning forward; any future PR that touches a violating file must fix it. Repos with severe legacy debt (e.g., committed data > 50 MB) are flagged for a separate cleanup sprint — document these in the inventory.
+      </div>
+
+      <h3 class="subsection">7.3 Migration Execution (per pilot repo)</h3>
+      <table>
+        <thead><tr><th>Step</th><th>Timing</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Notify owner</strong></td><td>T–7 days</td><td>Slack message: migration date, what to expect, link to TechDocs, DevEx handle for questions</td></tr>
+          <tr><td><strong>Dry-run</strong></td><td>T–2 days</td><td><code>github-governance apply --dry-run &lt;repo&gt;</code>. Review diff with repo owner. Move surprises to next wave.</td></tr>
+          <tr><td><strong>Migrate</strong></td><td>T+0</td><td>1. Run GH Enterprise Importer. 2. Verify: commit count, branches, tags match. 3. Apply branch protection rules (warn mode). 4. Run <code>github-governance apply &lt;repo&gt;</code>. 5. Governance PR opened by <code>github-governance-bot</code>.</td></tr>
+          <tr><td><strong>Merge window</strong></td><td>T+1 to T+5</td><td>CI runs in warn mode. Owner reviews and merges governance PR. DevEx merges any PR with no activity at T+5.</td></tr>
+          <tr><td><strong>Enforcement cutover</strong></td><td>T+5</td><td>Update <code>mode: warn → mode: block</code> in governance workflow. Notify owner via Slack.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">7.4 Per-Repo Validation Checklist (after governance PR merged)</h3>
+      <div class="checklist">
+        <div class="checklist-item"><input type="checkbox"/><label>All governance files present and correct</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label><code>pre-commit install</code> runs cleanly on a team member's workstation</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Team member successfully runs pre-commit hooks locally on a test file</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Clean PR → CI passes</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>PR with bad notebook → CI fails with clear error message</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>PR with bad data file → CI fails with clear error message</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>No existing CI pipelines broken</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Repo appears correctly in Backstage catalog</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>TechDocs render correctly</label></div>
+      </div>
+
+      <h3 class="subsection">7.5 Retrospective</h3>
+      <p>Hold a 60-minute session with all pilot repo owners after all pilot repos complete. Capture: surprises/confusion, false positives and root cause, pre-commit hook friction, policy questions/edge cases, any policy refinements requested. Document findings. Update governance spec to v1.1 if needed. Update TechDocs.</p>
+
+      <h3 class="subsection">Phase 2 Success Criteria</h3>
+      <div class="checklist">
+        <div class="checklist-item"><input type="checkbox"/><label>All pilot repos migrated to GitHub EU</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>All pilot repos have governance applied and enforcement in block mode</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>All pilot repos pass the per-repo validation checklist</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Zero critical unresolved issues</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Retrospective held, findings documented</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Governance spec updated to v1.1 if changes were needed</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Phase 3 wave plan approved by DevEx lead and at least one product team lead</label></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: PHASE 3 — WAVE PLAN -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="phase3">
+      <h2 class="section-title"><span class="icon">🌊</span>Phase 3 — Bulk Migration: ~300 Repos in Waves <small style="font-size:13px; font-weight:400; color:#42526E;">(Weeks 6–14)</small></h2>
+
+      <div class="panel panel-success">
+        <div class="panel-title">Objective</div>
+        Migrate all remaining repos from GHES to GitHub EU using the validated wave approach. Apply governance to every repo. Sequence by risk: inactive repos first, complex/special repos last.
+      </div>
+
+      <div id="wave-plan">
+        <h3 class="subsection">8.1 Wave Plan</h3>
+
+        <div class="wave-card w1">
+          <div class="wave-header"><span class="wave-name">🌊 Wave 1 — Tier 1 Inactive</span><span class="wave-count">25–30 repos | Weeks 6–7</span></div>
+          <div class="wave-desc">Low risk; validate automation at scale. No active contributors — safe to migrate without disruption.</div>
+        </div>
+
+        <div class="wave-card w2">
+          <div class="wave-header"><span class="wave-name">🌊 Wave 2 — Tier 1 Remaining + Tier 2 Low-Activity</span><span class="wave-count">30–35 repos | Weeks 7–8</span></div>
+          <div class="wave-desc">Process now proven; increase pace. Low-activity repos with minimal developer impact.</div>
+        </div>
+
+        <div class="wave-card w3">
+          <div class="wave-header"><span class="wave-name">🌊 Wave 3 — Tier 2 Standard Active</span><span class="wave-count">45–50 repos | Weeks 8–9</span></div>
+          <div class="wave-desc">Bulk of repos; full team communication required. Group by team — all a team's repos migrate together.</div>
+        </div>
+
+        <div class="wave-card w4">
+          <div class="wave-header"><span class="wave-name">🌊 Wave 4 — Tier 2 Standard Active (Continuation)</span><span class="wave-count">45–50 repos | Weeks 9–10</span></div>
+          <div class="wave-desc">Remaining standard active repos. Same process as Wave 3.</div>
+        </div>
+
+        <div class="wave-card w5">
+          <div class="wave-header"><span class="wave-name">🌊 Wave 5 — Tier 3 Complex</span><span class="wave-count">40–50 repos | Weeks 10–12</span></div>
+          <div class="wave-desc">Repos with violations in history. Extended merge window: 10 business days instead of 5. CI starts in warn mode and stays there until team confirms cleanup complete (or 30 days, whichever first).</div>
+        </div>
+
+        <div class="wave-card w6">
+          <div class="wave-header"><span class="wave-name">🌊 Wave 6 — Tier 3 Complex (Remaining)</span><span class="wave-count">40–50 repos | Weeks 12–13</span></div>
+          <div class="wave-desc">Same handling as Wave 5. DevEx tracks open legacy violations as a separate dashboard metric.</div>
+        </div>
+
+        <div class="wave-card w7">
+          <div class="wave-header"><span class="wave-name">🌊 Wave 7 — Tier 4 Special / Bespoke CI / Monorepos</span><span class="wave-count">Variable | Weeks 13–14</span></div>
+          <div class="wave-desc">Handled one at a time. DevEx schedules a 30-minute 1:1 with each repo owner. Review what makes repo non-standard. Determine if policy exception needed or if repo can be brought to standard with small adjustments. Apply governance manually (not via batch script). Validate with repo owner before enforcement cutover.</div>
+        </div>
+      </div>
+
+      <h3 class="subsection">8.2 Wave Gating Criteria</h3>
+      <div class="panel panel-danger">
+        <div class="panel-title">Do NOT start the next wave until ALL of the following are met for the current wave</div>
+        <ul>
+          <li>≥ 95% of governance PRs merged (not just opened)</li>
+          <li>Zero unresolved P0 issues (CI completely broken, team blocked on shipping)</li>
+          <li>False positive rate &lt; 5% for the wave</li>
+          <li>Machine-readable log shows &lt; 2% <code>failed</code> status repos</li>
+          <li>Wave metrics reviewed by DevEx lead and sign-off given</li>
+        </ul>
+      </div>
+
+      <h3 class="subsection">8.3 Wave Execution Process (Detailed)</h3>
+
+      <h4 class="sub2">T–7 days: Team Notification</h4>
+      <p>Send to each affected team's Slack channel and by email:</p>
+      <div class="panel panel-info">
+        <div class="panel-title">Template Notification Message</div>
+        <strong>Subject:</strong> [Action Required] Your repos are migrating to GitHub EU on [DATE]<br/><br/>
+        Your repos are moving to GitHub EU on [DATE]. Here's what's happening:<br/>
+        <strong>Repos affected:</strong> [list]<br/><br/>
+        <strong>What will happen:</strong><br/>
+        • Your repos will be migrated with full history intact.<br/>
+        • A governance PR will be opened automatically. Please review and merge within 5 business days.<br/>
+        • CI checks will initially warn (not block). After you merge the PR, they will block.<br/><br/>
+        <strong>What you need to do before [DATE]:</strong><br/>
+        • Optionally: run <code>pre-commit install</code> in your repos and test locally.<br/>
+        • Optionally: strip outputs from any open PRs with notebooks.<br/><br/>
+        Docs: [TechDocs link] &nbsp; Questions: #devex-platform or tag @devex-oncall
+      </div>
+
+      <h4 class="sub2">T–2 days: Pre-Migration Dry Run</h4>
+      <pre><code>github-governance apply --dry-run --repo-list wave-N.txt &gt; wave-N-dryrun.json</code></pre>
+      <p>DevEx engineer reviews output: repos with unexpectedly large diffs → move to next wave. Repos with unresolvable conflicts → flag for Wave 7 manual handling. All others → confirm as ready.</p>
+
+      <h4 class="sub2">T+0: Migration Day</h4>
+      <p>Run sequentially per repo (can be parallelised per team, but not all 50 at once to avoid CI queue saturation):</p>
+      <ol>
+        <li>Trigger GH Enterprise Importer for the repo</li>
+        <li>Wait for import to complete (poll until status = complete)</li>
+        <li>Verify: <code>git log --oneline -5</code> on GHES and GitHub EU match</li>
+        <li>Apply branch protection rules (warn mode, governance-ci required but not yet blocking)</li>
+        <li>Run <code>github-governance apply &lt;repo&gt;</code> — opens governance PR</li>
+        <li>Log outcome to <code>wave-N-results.json</code></li>
+      </ol>
+      <p>Entire wave should complete within one business day. If any repo fails import, skip it, flag it in the log, and add it to the next wave.</p>
+
+      <h4 class="sub2">T+1 to T+5: Merge Window</h4>
+      <ul>
+        <li>DevEx monitors PR merge rate daily</li>
+        <li>CI runs in warn mode (<code>governance.yml mode: warn</code>)</li>
+        <li>Any team that reports a false positive gets an immediate response from DevEx (same business day)</li>
+        <li>At T+5: any unmerged governance PRs are merged by DevEx (pre-communicated policy, announced at T–7)</li>
+      </ul>
+
+      <h4 class="sub2">T+5: Enforcement Cutover</h4>
+      <p>Switch <code>mode: warn → mode: block</code> for all wave repos in one commit to the central governance repo. Send Slack notification to affected teams.</p>
+
+      <h4 class="sub2">T+7: Wave Close Review</h4>
+      <p>DevEx engineer reviews <code>wave-N-results.json</code>: stats (applied/skipped/failed/false positives, PRs auto-merged vs team-merged), patterns requiring spec or tooling updates, sign off on wave completion.</p>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: PHASE 4 -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="phase4">
+      <h2 class="section-title"><span class="icon">🔒</span>Phase 4 — Hardening &amp; Steady State <small style="font-size:13px; font-weight:400; color:#42526E;">(Weeks 14–16 + Ongoing)</small></h2>
+
+      <h3 class="subsection">9.1 Coverage Audit</h3>
+      <p>Within 2 weeks of Wave 7 completing:</p>
+      <pre><code>github-governance audit --all --format json &gt; coverage-audit.json</code></pre>
+      <p>Review for: repos in Backstage catalog with no governance applied; repos with spec version below current; repos where governance CI workflow exists but is not a required check; repos where branch protection is misconfigured. Remediate all gaps. This is the final gate before declaring migration complete.</p>
+
+      <h3 class="subsection">9.2 Scheduled Drift Detection</h3>
+      <p>Set up a weekly scheduled GitHub Actions job in the central governance repo:</p>
+      <pre><code>Schedule: Every Monday at 09:00 UTC
+
+Job steps:
+1. Query Backstage catalog API for all active repos
+2. Run github-governance audit --all --format json
+3. Parse results:
+   - Repos with status: drift or status: missing → open GitHub issue with repo list
+   - Repos with spec version &gt; 1 minor version behind → add to "upgrade queue" issue
+4. If drift_count &gt; 5: post to #devex-oncall Slack channel
+5. Write metrics to Grafana via push gateway</code></pre>
+
+      <h3 class="subsection">9.3 Dashboard Metrics</h3>
+      <table>
+        <thead><tr><th>Metric</th><th>Description</th><th>Alert Threshold</th></tr></thead>
+        <tbody>
+          <tr><td><code>governance.coverage_pct</code></td><td>% of catalog repos with governance applied at current spec</td><td class="risk-high">&lt; 95% → alert</td></tr>
+          <tr><td><code>governance.drift_count</code></td><td>Repos with governance files missing or modified</td><td class="risk-medium">&gt; 5 → alert</td></tr>
+          <tr><td><code>governance.spec_lag_count</code></td><td>Repos more than 1 minor version behind current spec</td><td class="risk-medium">&gt; 20 → alert</td></tr>
+          <tr><td><code>governance.violations_per_week</code></td><td>PRs blocked by governance CI (notebook + data, split)</td><td class="risk-low">Informational</td></tr>
+          <tr><td><code>governance.false_positives_per_week</code></td><td>Violations reported as false positives via issues</td><td class="risk-medium">&gt; 3/week → review</td></tr>
+          <tr><td><code>governance.time_to_governed</code></td><td>Minutes from repo creation (Backstage) to governance applied</td><td class="risk-high">&gt; 15 min → alert</td></tr>
+          <tr><td><code>governance.enforcement_mode</code></td><td>Count of repos in warn vs. block mode</td><td class="risk-high">All should be block after Phase 3</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">9.4 GHES Decommission</h3>
+      <div class="panel panel-info">
+        <div class="panel-title">90-Day Read-Only Window</div>
+        GHES remains accessible in <strong>read-only mode</strong> for 90 days after Wave 7 completes. During this window: no new pushes to GHES, engineers can still read history if needed for reference, DevEx monitors GHES access logs; declining access confirms safe decommission. At day 90, GHES is decommissioned. DevEx lead approves this step explicitly.
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: GOVERNANCE -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="governance">
+      <h2 class="section-title"><span class="icon">📜</span>Governance Policy</h2>
+      <div class="panel panel-danger">
+        <div class="panel-title">Policy Sign-off Required</div>
+        This section is the authoritative policy statement. It must be signed off by engineering leadership before Phase 3 begins. Changes to this policy require stakeholder sign-off.
+      </div>
+
+      <h3 class="subsection" id="notebook-policy">3.1 Jupyter Notebook Policy</h3>
+      <table>
+        <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>.ipynb files</td><td>Permitted in any directory</td></tr>
+          <tr><td>Cell outputs</td><td><strong>Forbidden</strong> in any committed notebook</td></tr>
+          <tr><td>Execution counts</td><td><strong>Forbidden</strong> in any committed notebook</td></tr>
+          <tr><td>Local enforcement</td><td>Pre-commit hook strips outputs before commit (auto-fix)</td></tr>
+          <tr><td>CI enforcement</td><td>PR check fails if any added/modified .ipynb contains outputs</td></tr>
+          <tr><td>Exception</td><td>None. Outputs must always be stripped.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection" id="data-policy">3.2 Data File Policy</h3>
+      <table>
+        <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>Blocked file types</td><td><code>.csv, .tsv, .parquet, .feather, .orc, .pkl, .pickle, .npy, .npz, .h5, .hdf5, .db, .sqlite, .sqlite3, .zip, .tar, .tar.gz, .tgz, .gz, .7z, .rar</code></td></tr>
+          <tr><td>Blocked anywhere</td><td>Files matching the above in any directory except the explicit allowlist</td></tr>
+          <tr><td>Allowed path</td><td><code>tests/data/**</code> only</td></tr>
+          <tr><td>Allowed size</td><td>≤ 1 MB per file in <code>tests/data/</code></td></tr>
+          <tr><td>Local enforcement</td><td>Pre-commit hook rejects blocked files before commit</td></tr>
+          <tr><td>CI enforcement</td><td>PR check fails if any added file matches blocked types outside allowed path, or exceeds size cap inside allowed path</td></tr>
+          <tr><td>Exception process</td><td>Team submits request via Backstage form; DevEx approves; exception stored in <code>catalog-info.yaml</code></td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">3.3 Governance File Ownership</h3>
+      <table>
+        <thead><tr><th>File</th><th>Owned by</th><th>May teams modify?</th></tr></thead>
+        <tbody>
+          <tr><td><code>.pre-commit-config.yaml</code></td><td>github-governance</td><td>May add blocks; must not remove governance blocks</td></tr>
+          <tr><td><code>.github/workflows/governance.yml</code></td><td>github-governance</td><td>No — managed file</td></tr>
+          <tr><td><code>.gitignore</code> (governance entries)</td><td>github-governance</td><td>May add entries; must not remove governance entries</td></tr>
+          <tr><td><code>catalog-info.yaml</code></td><td>github-governance + team</td><td>Teams own their metadata; governance/ annotations are managed</td></tr>
+          <tr><td><code>mkdocs.yml</code></td><td>github-governance + team</td><td>Teams own their docs content</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection" id="exception-process">3.4 Exception Process</h3>
+      <ol>
+        <li>Team submits an exception request via the Backstage governance exception form.</li>
+        <li>DevEx reviews within 3 business days.</li>
+        <li>If approved, the exception is written into the repo's <code>catalog-info.yaml</code> under <code>governance/exceptions</code>.</li>
+        <li><code>github-governance apply</code> and <code>audit</code> respect declared exceptions.</li>
+        <li>Exceptions are reviewed quarterly. Expired exceptions are removed automatically.</li>
+      </ol>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: ROLES -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="roles">
+      <h2 class="section-title"><span class="icon">👥</span>Roles &amp; Responsibilities</h2>
+
+      <h3 class="subsection">DevEx Platform Team</h3>
+      <table>
+        <thead><tr><th>Task</th><th>Who</th></tr></thead>
+        <tbody>
+          <tr><td>Phase ownership and stakeholder sign-off</td><td>DevEx lead</td></tr>
+          <tr><td>github-governance CLI development and maintenance</td><td>DevEx engineers (2)</td></tr>
+          <tr><td>Migration automation scripts</td><td>DevEx engineer</td></tr>
+          <tr><td>Wave execution (running apply, opening PRs, monitoring)</td><td>DevEx engineers</td></tr>
+          <tr><td>Drift detection job and dashboards</td><td>DevEx engineer</td></tr>
+          <tr><td>Incident response for governance rollback</td><td>DevEx on-call</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">Backstage Admin</h3>
+      <table>
+        <thead><tr><th>Task</th><th>Who</th></tr></thead>
+        <tbody>
+          <tr><td>Scaffolder action implementation</td><td>Backstage admin</td></tr>
+          <tr><td>Template updates (governance action wired in)</td><td>Backstage admin + template owners</td></tr>
+          <tr><td>Catalog API integration for audit</td><td>Backstage admin</td></tr>
+          <tr><td>TechDocs pipeline configuration</td><td>Backstage admin</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">Product Team Leads</h3>
+      <table>
+        <thead><tr><th>Task</th><th>Who</th></tr></thead>
+        <tbody>
+          <tr><td>Governance policy sign-off</td><td>Each team lead</td></tr>
+          <tr><td>Team communication (relaying DevEx announcements)</td><td>Each team lead</td></tr>
+          <tr><td>Participating in pilot retrospective (pilot teams)</td><td>Pilot team leads</td></tr>
+          <tr><td>Tier 4 repo working sessions</td><td>Relevant team leads</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">Product Team Engineers</h3>
+      <table>
+        <thead><tr><th>Task</th><th>Who</th></tr></thead>
+        <tbody>
+          <tr><td>Installing pre-commit locally</td><td>Each engineer</td></tr>
+          <tr><td>Reviewing and merging governance PRs</td><td>Repo owners</td></tr>
+          <tr><td>Cleaning up legacy violations (Tier 3 repos)</td><td>Engineers on affected teams</td></tr>
+          <tr><td>Reporting false positives</td><td>Any engineer</td></tr>
+          <tr><td>Requesting exceptions</td><td>Engineers via Backstage form</td></tr>
+        </tbody>
+      </table>
+
+      <div class="panel panel-note">
+        <div class="panel-title">What product teams are NOT responsible for</div>
+        Writing or understanding governance hooks or CI workflows; manually applying governance to their repos; understanding the internals of <code>github-governance</code>.
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: COMMS -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="comms">
+      <h2 class="section-title"><span class="icon">📣</span>Communication Plan</h2>
+
+      <h3 class="subsection">Pre-Migration (Phase 0–1)</h3>
+      <table>
+        <thead><tr><th>Timing</th><th>Audience</th><th>Channel</th><th>Message</th></tr></thead>
+        <tbody>
+          <tr><td>Phase 0 complete</td><td>All engineering leads</td><td>All-hands slide or async Slack</td><td>"We are migrating to GitHub EU. Here is the high-level plan and timeline. Nothing changes for you yet."</td></tr>
+          <tr><td>Phase 1 complete</td><td>All engineering leads</td><td>Email + Slack</td><td>"Governance is ready. TechDocs published. If you want to try it early, here's how. Pilot migration starts next week."</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">Per-Wave Communication</h3>
+      <table>
+        <thead><tr><th>Timing</th><th>Audience</th><th>Channel</th><th>Message</th></tr></thead>
+        <tbody>
+          <tr><td>T–7 days</td><td>Affected team channels</td><td>Slack + email</td><td>Specific repos, migration date, what to expect, TechDocs link</td></tr>
+          <tr><td>T+0</td><td>Affected team channels</td><td>Automated PR comment</td><td>Governance PR opened; explains each change; links to TechDocs; how to get help</td></tr>
+          <tr><td>T+5</td><td>Affected team channels</td><td>Slack notification</td><td>"CI is now enforcing for your repos. Here is what happens if a PR fails: [link]"</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">Ongoing (Steady State)</h3>
+      <table>
+        <thead><tr><th>Frequency</th><th>Audience</th><th>Channel</th><th>Content</th></tr></thead>
+        <tbody>
+          <tr><td>Monthly</td><td>All engineering</td><td>Slack #engineering-announce</td><td>Governance stats: violations caught, coverage %, any policy changes</td></tr>
+          <tr><td>Quarterly</td><td>Engineering leads</td><td>Email</td><td>Exception review outcomes, spec version updates, decommission progress</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">Escalation Path for Teams</h3>
+      <p>If a team hits a blocking issue with governance:</p>
+      <ol>
+        <li>Post in <code>#devex-platform</code> Slack channel</li>
+        <li>DevEx responds within 4 business hours</li>
+        <li>If critical (prod deploy blocked): page DevEx on-call — target 30-minute response</li>
+        <li>If false positive: DevEx can switch repo to warn mode temporarily while investigating (15-minute operation)</li>
+      </ol>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: VALIDATION -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="validation">
+      <h2 class="section-title"><span class="icon">✅</span>Validation &amp; Rollback</h2>
+
+      <h3 class="subsection">12.1 Per-Wave Validation</h3>
+      <table>
+        <thead><tr><th>Check</th><th>How</th></tr></thead>
+        <tbody>
+          <tr><td>Functional block test</td><td>Open a test PR with a notebook containing output; confirm CI fails</td></tr>
+          <tr><td>Functional allow test</td><td>Open a test PR with a clean notebook + fixture CSV under 1MB in <code>tests/data/</code>; confirm CI passes</td></tr>
+          <tr><td>Size cap test</td><td>Open a test PR with a 2 MB CSV in <code>tests/data/</code>; confirm CI fails</td></tr>
+          <tr><td>Regression check</td><td>Review the last 10 merged PRs on a sample of wave repos; confirm no unexpected failures</td></tr>
+          <tr><td>Pre-commit local test</td><td>DevEx engineer installs pre-commit on a wave repo; attempts to commit bad notebook; confirms hook fires</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection">12.2 Rollback: Single Repo (Target: &lt; 30 minutes)</h3>
+      <p><strong>Trigger:</strong> Team reports critical regression (CI blocks a legitimate operation, pre-commit causes breaking errors).</p>
+      <p><strong>Runbook:</strong></p>
+      <ol>
+        <li>DevEx engineer clicks "Revert" on the governance PR in GitHub EU</li>
+        <li>The governance CI workflow is now absent; branch protection falls back to no governance-ci requirement</li>
+        <li>Repo is effectively ungoverned</li>
+        <li>DevEx logs the incident, diagnoses root cause</li>
+        <li>If root cause is a false positive in a hook/check → fix in central workflow, re-test</li>
+        <li>If root cause is a policy edge case → add exception to <code>catalog-info.yaml</code></li>
+        <li>Re-open governance PR after fix; repo goes back through the 5-day merge window</li>
+      </ol>
+
+      <h3 class="subsection">12.3 Rollback: Wave-Level (Target: &lt; 2 hours)</h3>
+      <p><strong>Trigger:</strong> More than 3 repos in the same wave report the same critical regression.</p>
+      <p><strong>Runbook:</strong></p>
+      <ol>
+        <li>DevEx lead calls wave halt immediately</li>
+        <li>In the central governance repo, change the reusable workflow to <code>mode: warn</code> for all repos (single commit, propagates automatically)</li>
+        <li>Repos stop blocking PRs within minutes (no per-repo action required)</li>
+        <li>Convene 30-minute incident review within 24 hours</li>
+        <li>Identify and fix root cause</li>
+        <li>Update spec if needed (increment patch version)</li>
+        <li>Re-run wave dry-run against affected repos before restarting</li>
+      </ol>
+
+      <h3 class="subsection">12.4 Handling Legacy Violations Safely</h3>
+      <div class="panel panel-info">
+        <div class="panel-title">CI only scans the PR diff, not the full repository tree</div>
+        <ul>
+          <li>A repo with bad notebooks or data files committed years ago does NOT have its CI fail on every PR — only if the PR itself touches those files.</li>
+          <li>This means governance can be applied to 100% of repos without immediately breaking teams working around legacy debt.</li>
+          <li>Teams clean forward at their own pace; DevEx tracks progress via dashboard.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: RISKS -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="risks">
+      <h2 class="section-title"><span class="icon">⚠️</span>Risk Register</h2>
+      <table>
+        <thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr class="risk-medium"><td><strong>False positives blocking legitimate files</strong></td><td>Medium</td><td>High</td><td>Clear exception path with same-day DevEx response; <code>tests/data/</code> allowlist; warn mode during merge window; teams can self-report via #devex-platform</td></tr>
+          <tr class="risk-low"><td>CI queue saturation during wave execution</td><td>Low-Medium</td><td>Medium</td><td>Stagger repo migrations throughout the business day; reusable workflow runs on GitHub-hosted runners (not a shared self-hosted pool); monitor queue depth before each wave</td></tr>
+          <tr class="risk-medium"><td>Pre-commit hooks slow local dev</td><td>Medium</td><td>Medium</td><td>Benchmark hook runtime before Phase 1 (target &lt; 5s for typical commit); document expected times in TechDocs; engineers can use <code>--no-verify</code> as a local escape hatch — CI backstop still catches violations</td></tr>
+          <tr class="risk-medium"><td>Teams bypass governance (delete config, <code>--no-verify</code>)</td><td>Medium</td><td>Medium</td><td>CI check is a required branch protection rule — cannot be bypassed regardless of local hook removal; drift detection catches deleted governance files within 7 days; <code>--no-verify</code> patterns in CI logs surfaced in monthly metrics</td></tr>
+          <tr class="risk-low"><td>GH Enterprise Importer failures / data loss</td><td>Low</td><td>High</td><td>Full dry-run of importer on pilot cohort; commit count and branch/tag verification post-import; GHES stays read-only for 90 days; never migrate without verifying import success before decommission</td></tr>
+          <tr class="risk-medium"><td>GHES integrations (webhooks, CI triggers) break post-migration</td><td>Medium</td><td>Medium</td><td>Inventory all webhooks and external integrations in Phase 0; include webhook URL update in migration automation script; smoke-test key integrations on pilot repos before bulk migration</td></tr>
+          <tr class="risk-medium"><td>Team adoption failure (low local pre-commit usage)</td><td>Medium</td><td>Low</td><td>Pre-commit is not required locally; CI is the backstop; measure adoption ratio: if CI-block rate is high relative to local-hook rate, run a targeted enablement session for that team</td></tr>
+          <tr class="risk-low"><td>Governance spec drift (repos stuck on old versions)</td><td>Low</td><td>Low</td><td>Weekly audit flags stale repos; automated upgrade PRs opened when spec increments; drift count tracked on dashboard</td></tr>
+          <tr class="risk-low"><td>Repos not in Backstage catalog missed</td><td>Low</td><td>High</td><td>Phase 0 inventory uses GHES admin API as source of truth, not Backstage; reconcile any discrepancies before Phase 3; post-migration coverage audit catches stragglers</td></tr>
+          <tr class="risk-medium"><td>Legacy violations causing team panic when CI first runs</td><td>Medium</td><td>Medium</td><td>CI starts in warn mode; TechDocs explains legacy violation behaviour before enforcement cutover; DevEx pre-scans each wave repo for violations and includes summary in the governance PR body</td></tr>
+          <tr class="risk-medium"><td>Wave 7 Tier 4 repos requiring policy exceptions delay timeline</td><td>Medium</td><td>Low</td><td>Start Wave 7 planning in parallel with Wave 5–6; cap exception-granting SLA at 3 business days; hard deadline: exceptions not decided by SLA are auto-rejected (teams must come back into standard)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: TIMELINE -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="timeline">
+      <h2 class="section-title"><span class="icon">📅</span>Master Timeline (16 Weeks)</h2>
+
+      <div class="timeline">
+        <div class="timeline-header">📅 Visual Timeline — GitHub Enterprise → GitHub EU Migration</div>
+        <div class="timeline-row">
+          <div class="timeline-label">🏗️ Phase 0: Foundation</div>
+          <div class="timeline-weeks">Weeks 1–2</div>
+          <div class="timeline-bar-wrap"><div class="timeline-bar bar-teal" style="width:12.5%"></div></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-label">🔗 Phase 1: Backstage</div>
+          <div class="timeline-weeks">Weeks 2–4</div>
+          <div class="timeline-bar-wrap"><div class="timeline-bar bar-blue" style="width:12.5%; margin-left:12.5%"></div></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-label">✈️ Phase 2: Pilot</div>
+          <div class="timeline-weeks">Weeks 4–6</div>
+          <div class="timeline-bar-wrap"><div class="timeline-bar bar-yellow" style="width:12.5%; margin-left:25%"></div></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-label">🌊 Wave 1 (Tier 1 Inactive)</div>
+          <div class="timeline-weeks">Weeks 6–7</div>
+          <div class="timeline-bar-wrap"><div class="timeline-bar bar-teal" style="width:6.25%; margin-left:37.5%"></div></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-label">🌊 Wave 2 (T1+T2 Low)</div>
+          <div class="timeline-weeks">Weeks 7–8</div>
+          <div class="timeline-bar-wrap"><div class="timeline-bar bar-teal" style="width:6.25%; margin-left:43.75%"></div></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-label">🌊 Wave 3 (T2 Active)</div>
+          <div class="timeline-weeks">Weeks 8–9</div>
+          <div class="timeline-bar-wrap"><div class="timeline-bar bar-blue" style="width:6.25%; margin-left:50%"></div></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-label">🌊 Wave 4 (T2 Active cont.)</div>
+          <div class="timeline-weeks">Weeks 9–10</div>
+          <div class="timeline-bar-wrap"><div class="timeline-bar bar-blue" style="width:6.25%; margin-left:56.25%"></div></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-label">🌊 Wave 5 (T3 Complex)</div>
+          <div class="timeline-weeks">Weeks 10–12</div>
+          <div class="timeline-bar-wrap"><div class="timeline-bar bar-yellow" style="width:12.5%; margin-left:62.5%"></div></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-label">🌊 Wave 6 (T3 Remaining)</div>
+          <div class="timeline-weeks">Weeks 12–13</div>
+          <div class="timeline-bar-wrap"><div class="timeline-bar bar-red" style="width:6.25%; margin-left:75%"></div></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-label">🌊 Wave 7 (T4 Special)</div>
+          <div class="timeline-weeks">Weeks 13–14</div>
+          <div class="timeline-bar-wrap"><div class="timeline-bar bar-red" style="width:6.25%; margin-left:81.25%"></div></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-label">🔒 Phase 4: Hardening</div>
+          <div class="timeline-weeks">Weeks 14–16</div>
+          <div class="timeline-bar-wrap"><div class="timeline-bar bar-green" style="width:12.5%; margin-left:87.5%"></div></div>
+        </div>
+      </div>
+
+      <h3 class="subsection">Pros &amp; Cons Summary</h3>
+      <div class="compare">
+        <div class="compare-box after">
+          <h4>✅ Pros of This Migration</h4>
+          <ul>
+            <li>All repos governed consistently from day one</li>
+            <li>Automated enforcement — no manual policing</li>
+            <li>Backstage as single pane of glass for all repos</li>
+            <li>New repos born governed (zero manual steps)</li>
+            <li>CI catches notebook/data violations before they accumulate</li>
+            <li>Drift detection catches config rot weekly</li>
+            <li>GHES 90-day read-only window = safe fallback</li>
+            <li>Wave-gated approach limits blast radius if something breaks</li>
+            <li>Rollback runbooks tested and documented</li>
+            <li>Full git history preserved by GH Enterprise Importer</li>
+          </ul>
+        </div>
+        <div class="compare-box before">
+          <h4>⚠️ Cons / Trade-offs</h4>
+          <ul>
+            <li>16-week timeline requires sustained DevEx resource commitment</li>
+            <li>Pre-commit hooks add friction for engineers used to committing freely</li>
+            <li>CI false positives (e.g., legitimate small CSV) will happen and require DevEx response</li>
+            <li>Tier 3 legacy violations require team cleanup effort</li>
+            <li>Tier 4 / bespoke repos need manual handling — can't be fully automated</li>
+            <li>Webhook / integration re-wiring may surface hidden dependencies</li>
+            <li>GitHub Packages namespace change requires team pipeline updates</li>
+            <li>Policy exceptions add ongoing governance overhead</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: DEFINITION OF DONE -->
+    <!-- ═══════════════════════════════════════ -->
+    <section class="section" id="dod">
+      <h2 class="section-title"><span class="icon">🏁</span>Definition of Done</h2>
+
+      <h3 class="subsection">Migration Complete</h3>
+      <div class="checklist">
+        <div class="checklist-item"><input type="checkbox"/><label>100% of GHES repos migrated to GitHub EU with full history intact</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>100% of migrated repos have github-governance applied at current spec version</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>governance-ci check is a required branch protection check on every repo's default branch</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Zero repos in warn mode (all in block mode)</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>All Tier 4 repos either brought into standard or have an approved, documented exception</label></div>
+      </div>
+
+      <h3 class="subsection">Governance System Complete</h3>
+      <div class="checklist">
+        <div class="checklist-item"><input type="checkbox"/><label>Backstage scaffolder action live: new repos born governed with zero manual steps</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Weekly drift detection scheduled job running and alerting</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Grafana dashboard live with all metrics defined in Section 9.3</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Exception process documented in TechDocs and at least one full quarterly review completed</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Governance spec changelog maintained in central repo</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Spec upgrade process tested at least once (even if just a patch-level change)</label></div>
+      </div>
+
+      <h3 class="subsection">Infrastructure Complete</h3>
+      <div class="checklist">
+        <div class="checklist-item"><input type="checkbox"/><label>GHES accessible read-only; decommission date set (day 90 post-Wave 7)</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Service account (github-governance-bot) operational with correct scoped permissions</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Central governance repo has at least two DevEx engineers with admin access</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>Rollback runbook tested (at least one dry-run of the single-repo rollback procedure)</label></div>
+      </div>
+
+      <h3 class="subsection">Team Enablement Complete</h3>
+      <div class="checklist">
+        <div class="checklist-item"><input type="checkbox"/><label>TechDocs governance pages published and receiving traffic</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>All engineering teams received at least one wave notification and had opportunity to ask questions</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>At least one enablement session run for each team with Tier 3 repos</label></div>
+        <div class="checklist-item"><input type="checkbox"/><label>#devex-platform Slack channel exists and DevEx response SLA is documented and published</label></div>
+      </div>
+
+      <div class="panel panel-note" style="margin-top:32px;">
+        <div class="panel-title">Plan Ownership</div>
+        This plan is owned by the DevEx Platform Team. Changes to governance policy (Section 3) require stakeholder sign-off. Changes to migration sequencing or wave sizing are at DevEx lead discretion.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// Active sidebar highlighting on scroll
+const sections = document.querySelectorAll('.section[id]');
+const links = document.querySelectorAll('.sidebar a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 80) current = s.id;
+  });
+  links.forEach(l => {
+    l.classList.remove('active');
+    if (l.getAttribute('href') === '#' + current) l.classList.add('active');
+  });
+});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
